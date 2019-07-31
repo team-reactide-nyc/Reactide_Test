@@ -13,10 +13,10 @@ module.exports = () => {
   ipcMain.on('openSimulator', (event) => {
     simulator();
   });
-
-  ipcMain.on('openInWindow', () => {
-    InWindowSimulator();
-  })
+  
+  ipcMain.on('start simulator', ()=> {
+    windowSimulator();
+  });
   ipcMain.on('createItem', (event, dirPath, name, type) => {
     if (type === 'file') {
       fs.writeFile(path.join(dirPath, name), '', err => {
@@ -28,20 +28,23 @@ module.exports = () => {
       });
     }
   });
-
+  
   ipcMain.on('delete', (event, itemPath) => {
     deleteItem(itemPath);
   });
-
+  
   ipcMain.on('rename', (event, itemPath, newName) => {
     fs.rename(itemPath, path.join(path.dirname(itemPath), newName), (err) => {
       if(err) console.log(err);
     });
   });
-  ipcMain.on('start simulator', ()=> {
-    windowSimulator();
-  });
+
+  ipcMain.on('openInWindow', () => {
+    InWindowSimulator();
+  })
+  
   ipcMain.on('closeSim', (event, pid) => {
     closeSim(pid);
   });
+
 };

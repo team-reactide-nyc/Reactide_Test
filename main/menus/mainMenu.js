@@ -59,6 +59,14 @@ const menuTemplate = windowObj => [
           global.mainWindow.webContents.send('saveFile');
         },
         accelerator: 'CommandOrControl+S'
+      },
+      { type: 'separator'},
+      {
+        label: 'Terminal',
+        click: () => {
+          global.mainWindow.webContents.send('toggleTerminal');
+        },
+        accelerator: 'CommandOrControl+`',
       }
     ]
   },

@@ -9,6 +9,10 @@ module.exports = win => {
     });
   }
 
+  localShortcut.register(win,'CommandOrControl+`', () => {
+    win.webContents.send('toggleTerminal');
+  });
+
   localShortcut.register(win, 'CommandOrControl+S', () => {
     win.webContents.send('saveFile');
   });

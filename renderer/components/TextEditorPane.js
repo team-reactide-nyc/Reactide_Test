@@ -18,13 +18,13 @@ const TextEditorPane = ({ appState, setActiveTab, closeTab, onEditorValueChange,
     <ride-pane>
       {Object.keys(appState.openTabs).length > 0 &&
         <React.Fragment>
-          <TabContainer
+          {/* <TabContainer
             appState={appState}
             setActiveTab={setActiveTab}
             closeTab={closeTab}
             cbOpenSimulator_Main={cbOpenSimulator_Main}
             cbOpenSimulator_Ext={cbOpenSimulator_Ext}
-          />
+          /> */}
           <TextEditor
             path={appState.previousPaths[appState.previousPaths.length - 1]}
             onValueChange={onEditorValueChange}

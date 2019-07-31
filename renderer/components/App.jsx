@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import FileTree from './FileTree';
 import TextEditorPane from './TextEditorPane';
 import DeletePrompt from './DeletePrompt';
@@ -6,6 +7,7 @@ import MockComponentTree from './MockComponentTree';
 import MockComponentInspector from './MockComponentInspector';
 import RefreshComponentTreeButton from './RefreshComponentTreeButton';
 import ConsolePane from './ConsolePane';
+import TabContainer from './TabContainer';
 import { ipcMain } from 'electron';
 import InWindowSimulator from './InWindowSimulator';
 const { ipcRenderer } = require('electron');
@@ -48,7 +50,9 @@ export default class App extends React.Component {
       cra: false,
       craOut: '',
       outputOrTerminal: 'output',
-      liveServerPID: null
+      liveServerPID: null,
+      toggleTerminal: false,
+      hasToggled:false,
     };
 
     this.fileTreeInit();
@@ -71,7 +75,6 @@ export default class App extends React.Component {
     this.openSim = this.openSim.bind(this);
     this.closeSim = this.closeSim.bind(this);
     this.openSimulatorInMain = this.openSimulatorInMain.bind(this);
-
     //reset tabs, should store state in local storage before doing this though
   }
 
@@ -82,14 +85,14 @@ export default class App extends React.Component {
         this.setState({ openTabs: {}, openedProjectPath: projPath });
       }
     });
-
     //when save file is initiated, save the tab
     ipcRenderer.on('saveFile', (event, arg) => {
       if (this.state.previousPaths[this.state.previousPaths.length - 1] !== null) {
         this.saveTab();
       }
     });
-
+    
+    
     //
     ipcRenderer.on('delete', (event, arg) => {
       if (this.state.selectedItem.id) {
@@ -116,7 +119,41 @@ export default class App extends React.Component {
     ipcRenderer.on('closeSim', (event, arg) => {
       this.setState({ url: ' ' })
     })
+    // ipcRenderer.on('toggleTerminal', (event,arg) => {
+    //       console.log('Setting terminal to ' ,this.state.toggleTerminal,this.state.hasToggled);
+    //       // this.setState({hasToggled:true})
+    //       if(!this.state.hasToggled){
+    //         this.setState({toggleTerminal:true});
+    //       } else {
+    //         this.setState({toggleTerminal:false});
+    //       }
+    // });
   }
+  // shouldComponentUpdate(nextProps,nextState){
+  //   ipcRenderer.on('toggleTerminal', (event,arg) => {
+  //     const {hasToggled, toggleTerminal} = nextState
+  //     console.log(`it has been toggled?  ${hasToggled} and my terminal is currently ${this.state.toggleTerminal} but turning to ${toggleTerminal}`)
+  //     if(!nextState.hasToggled){
+  //       console.log('state is turning true')
+  //       return true;
+  //     } else {
+  //       console.log('state is turning bad')
+  //       return false;
+  //     }
+  //   });
+  //   return true;
+  // }
+
+  // componentDidUpdate(){
+  //   console.log('UPDATINGGGGGGGG TOGGLE ' ,this.state.hasToggled , ' TERMINAL STATE ', this.state.toggleTerminal);
+  //   ipcRenderer.on('toggleTerminal', (event,arg) => {
+  //     this.setState({hasToggled:!this.state.hasToggled})
+  //   });
+  // }
+  // toggleTerminal(){
+  //   this.setState({toggleTerminal:!this.state.toggleTerminal});
+    
+  // }
   /**
    * Creates component Tree object for rendering by calling on methods defined in importPath.js
    */
@@ -343,6 +380,12 @@ export default class App extends React.Component {
       this.constructComponentTreeObj();
     });
   }
+  handleHMRButtonClick(event, callback) {
+    event.stopPropagation();
+  
+    if (callback)
+      callback();
+  }
   /**
    * returns index of file/dir in files or subdirectories array
    */
@@ -497,7 +540,8 @@ export default class App extends React.Component {
       this.setState({ previousPaths: history })
     }
   }
-
+  
+  
   /**
    * Open up the simulator by sending a message to ipcRenderer('openSimulator')
    */
@@ -545,7 +589,9 @@ export default class App extends React.Component {
   closeSim() {
     this.setState({ simulator: false });
     ipcRenderer.send('closeSim', this.state.liveServerPID);
+    event.stopPropagation();
   }
+  
   /**
    * render function for TextEditorPane
    */
@@ -616,10 +662,8 @@ export default class App extends React.Component {
       </ride-pane>
     );
   }
-
   renderMainTopPanel() {
     let renderer = [];
-
     if (this.state.simulator) {
       renderer.push(
         <React.Fragment>
@@ -629,17 +673,27 @@ export default class App extends React.Component {
           </button>
         </React.Fragment>
       );
+      renderer.push(<TabContainer
+        appState={this.state}
+        setActiveTab={this.setActiveTab}
+        closeTab={this.closeTab}
+        cbOpenSimulator_Main={this.openSimulatorInMain}
+        cbOpenSimulator_Ext={this.openSim}
+      />)
     }
     else {
+      renderer.push(<TabContainer
+        appState={this.state}
+        setActiveTab={this.setActiveTab}
+        closeTab={this.closeTab}
+        cbOpenSimulator_Main={this.openSimulatorInMain}
+        cbOpenSimulator_Ext={this.openSim}
+      />)
       renderer.push(this.renderTextEditorPane());
     }
     return renderer;
   }
-
-  renderMainBottomPanel() {
-    if (this.state.simulator) {
-      return this.renderTextEditorPane();
-    } else {
+  renderConsole(){
       return (
         <ConsolePane
           rootDirPath={this.state.rootDirPath}
@@ -647,7 +701,12 @@ export default class App extends React.Component {
           cb_cra={this.state.cra}
           cb_craOut={this.state.craOut}
         />);
-    }
+    
+  }
+  renderMainBottomPanel() {
+    if (this.state.simulator) {
+      return this.renderTextEditorPane();
+    } 
   }
 
   renderMainLayout() {
@@ -657,6 +716,7 @@ export default class App extends React.Component {
           <React.Fragment>
             {this.renderMainTopPanel()}
             {this.renderMainBottomPanel()}
+            {this.renderConsole()}
           </React.Fragment>
         }
       </ride-pane>

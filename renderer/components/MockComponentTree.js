@@ -90,7 +90,7 @@ class MockComponentTree extends React.PureComponent {
 
         <label key={'ct_node-lbl_' + name} id={'ct_node-lbl_' + name} className="tree_node" htmlFor={'ct_node-npt_' + name}>{name}</label>
 
-        {(Object.keys(stateProps).length > 0 || childProps.length > 0) && (
+        {(childProps.length > 0) && (
           <div className="props-container">
             <span className="props-form">
               {Object.keys(stateProps).length && (

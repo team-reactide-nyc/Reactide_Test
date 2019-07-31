@@ -15,7 +15,7 @@ const TabContainer = ({
   setActiveTab,
   closeTab,
   cbOpenSimulator_Main,
-  cbOpenSimulator_Ext
+  cbOpenSimulator_Ext,
 }) => {
   const tabs = [];
   // for (var i = 0; i < appState.openTabs.length; i++) {
@@ -48,17 +48,17 @@ const TabContainer = ({
         </ul>
       </div>
       <div id="editor-tabbar-right">
-        <div id="btn-hmr-group">
-          <i className="fas fa-desktop" />HMR
-          <div id="btn-hmr-main" className="btn" onClick={(event) => handleHMRButtonClick(event, cbOpenSimulator_Main)}>
-            <i className="fas fa-window-maximize" />
-          </div>
-          <div id="btn-hmr-ext" className="btn" onClick={(event) => handleHMRButtonClick(event, cbOpenSimulator_Ext)}>
-            <i className="fas fa-window-restore"></i>
-          </div>
+      <div id="btn-hmr-group">
+        <i className="fas fa-desktop" />HMR
+        <div id="btn-hmr-main" className="btn" onClick={(event) => handleHMRButtonClick(event, cbOpenSimulator_Main)}>
+          <i className="fas fa-window-maximize" />
+        </div>
+        <div id="btn-hmr-ext" className="btn" onClick={(event) => handleHMRButtonClick(event, cbOpenSimulator_Ext)}>
+          <i className="fas fa-window-restore"></i>
         </div>
       </div>
     </div>
+  </div>
   )
 };
 

@@ -84,14 +84,11 @@ function digStateInBlockStatement(obj) {
       if (element.expression.left.property.name === 'state') {
         if (element.expression.right.type === "ObjectExpression"){
            element.expression.right.properties.forEach(elem => {
-            //  ret[elem.key.name] = elem.value.value;
             ret[elem.key.name] = parseNestedObjects(elem)
-            console.log('parseNestedObjects return value', parseNestedObjects(elem))
           });
         }
       }
   });
-  console.log('return' ,ret)
   return ret;
  }
 
@@ -101,11 +98,14 @@ function digStateInBlockStatement(obj) {
   */
 function grabAttr(arrOfAttr) {
   return arrOfAttr.reduce((acc, curr) => {
+    // console.log(curr);
     if (curr.value.type === 'JSXExpressionContainer') {
       if (curr.value.expression.type === 'ArrowFunctionExpression' || curr.value.expression.type === 'FunctionExpression') {
         if(curr.value.expression.body.body) {
+          // console.log(`body body is good ${curr.name.name} and ${curr.value.expression.body.body[0].expression.callee.name}` );
           acc[curr.name.name] = curr.value.expression.body.body[0].expression.callee.name
         } else {
+          // console.log(`body body is bad ${curr.name.name} and ${ curr.value.expression.body.callee.name}`)
           acc[curr.name.name] = curr.value.expression.body.callee.name
         }
       } else if (curr.value.expression.type === 'Literal') {
@@ -183,6 +183,7 @@ const constructComponentProps = (returnObj) => {
  * @param {String} jsxPath - Path of file to convert into a AST object
  */
 function constructSingleLevel(jsxPath) {
+  console.log(`current filepath is ${jsxPath}`)
   let reactObj = {};
   // grabs content from file and creates an AST Object
   const fileContent = fs.readFileSync(jsxPath, { encoding: 'utf-8' });
